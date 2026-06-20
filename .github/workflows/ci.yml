@@ -28,19 +28,13 @@ jobs:
     - name: Install Playwright Browsers
       run: playwright install --with-deps
 
-    - name: Start backend server
-      run: |
-        # Start the FastAPI server in the background
-        uvicorn main:app --host 127.0.0.1 --port 8000 &
-      working-directory: ./backend
-
-    - name: Wait for server to be ready
-      run: sleep 5  # Give the server a few seconds to start
+    # הוסר השלב של הרצת השרת הלוקאלי - אנחנו עוברים ישר להרצת הבדיקות
 
     - name: Run Pytest suite
       run: pytest --html=report.html
       env:
-        # Securely inject environment variables required for the test run
+        # כאן תוכל להגדיר משתני סביבה שהטסטים שלך צריכים, למשל את כתובת האתר
+        BASE_URL: "https://sv-students-recommend.onrender.com"
         SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
         SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
 
