@@ -23,7 +23,7 @@
 
 This repository contains the complete quality assurance suite for the **SV Students Recommend** platform. It is designed to simulate real user interactions and validate backend logic simultaneously. 
 
-The framework is built on **Playwright for Python**, leveraging its native auto-waiting capabilities to eliminate flaky tests. It utilizes the **Page Object Model (POM)** architecture for maximum code reuse and integrates tightly with `pytest` for streamlined execution, rich HTML reporting, and CI/CD readiness.
+The framework is built on **Playwright for Python**, leveraging its native auto-waiting capabilities to eliminate flaky tests. It utilizes the **Page Object Model (POM)** architecture for maximum code reuse (located in `tests/ui/pages/`) and integrates tightly with `pytest` for streamlined execution, rich HTML reporting, and CI/CD readiness. For detailed Pytest execution options, see the [Pytest Commands Guide](Pytest_Commands_Guide.md).
 
 ---
 

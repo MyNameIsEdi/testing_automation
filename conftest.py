@@ -72,3 +72,40 @@ def admin_headers(admin_token):
         "Content-Type": "application/json",
         "accept": "application/json"
     }
+
+@pytest.fixture
+def auth_page(page):
+    """
+    Fixture to provide an authenticated UI page using standard user credentials.
+    Navigates to the app and performs login.
+    """
+    page.goto(f"{BASE_URL}/pages/login.html")
+    page.fill("input[type='email']", TEST_USER_EMAIL)
+    page.fill("input[type='password']", TEST_USER_PASSWORD)
+    page.click("button:has-text('Sign In')")
+    page.wait_for_selector("text='SV Recommend'")
+    return page
+
+@pytest.fixture
+def admin_page(page):
+    """
+    Fixture to provide an authenticated UI page using admin credentials.
+    """
+    page.goto(f"{BASE_URL}/pages/login.html")
+    page.fill("input[type='email']", ADMIN_EMAIL)
+    page.fill("input[type='password']", ADMIN_PASSWORD)
+    page.click("button:has-text('Sign In')")
+    page.wait_for_selector("text='System'")
+    return page
+
+@pytest.fixture
+def mobile_context(browser):
+    """
+    Provides a browser context configured for a mobile viewport.
+    """
+    context = browser.new_context(
+        viewport={'width': 375, 'height': 667},
+        user_agent="Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1"
+    )
+    yield context
+    context.close()
