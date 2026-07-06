@@ -108,3 +108,54 @@ def test_delete_recommendation(auth_headers, created_recommendation):
     # Verify it's gone
     get_response = requests.get(f"{BASE_URL}/api/recommendations/{created_recommendation}")
     assert get_response.status_code == 404, f"Expected 404 Not Found, got {get_response.status_code}"
+
+@pytest.mark.regression
+def test_get_recommendations_filter_by_category():
+    """Verify that filtering by category works correctly."""
+    response = requests.get(f"{BASE_URL}/api/recommendations?category=Movie")
+    assert response.status_code == 200
+    
+    body = response.json()
+    assert isinstance(body, list)
+    for item in body:
+        assert item.get("category") == "Movie"
+
+@pytest.mark.errors_handling
+def test_update_recommendation_invalid_category(auth_headers, created_recommendation):
+    """Verify that passing an invalid category enum returns 422."""
+    payload = {"category": "InvalidCategory"}
+    response = requests.put(f"{BASE_URL}/api/recommendations/{created_recommendation}", json=payload, headers=auth_headers)
+    assert response.status_code == 422
+
+@pytest.mark.regression
+def test_get_comments(created_recommendation):
+    """Verify getting comments for a specific recommendation."""
+    response = requests.get(f"{BASE_URL}/api/recommendations/{created_recommendation}/comments")
+    assert response.status_code == 200
+    assert isinstance(response.json(), list)
+
+@pytest.mark.regression
+def test_add_comment(auth_headers, created_recommendation):
+    """Verify adding a comment."""
+    payload = {"rating": 5, "comment_text": "Great recommendation!"}
+    response = requests.post(f"{BASE_URL}/api/recommendations/{created_recommendation}/comments", json=payload, headers=auth_headers)
+    assert response.status_code == 201
+    
+    body = response.json()
+    assert "id" in body
+    assert body.get("rating") == 5
+
+@pytest.mark.errors_handling
+def test_add_comment_invalid_rating(auth_headers, created_recommendation):
+    """Verify that a rating > 5 returns 422."""
+    payload = {"rating": 6, "comment_text": "Invalid rating"}
+    response = requests.post(f"{BASE_URL}/api/recommendations/{created_recommendation}/comments", json=payload, headers=auth_headers)
+    assert response.status_code == 422
+
+@pytest.mark.errors_handling
+def test_add_comment_no_auth(created_recommendation):
+    """Verify that unauthenticated user cannot add comment."""
+    payload = {"rating": 4, "comment_text": "No auth"}
+    response = requests.post(f"{BASE_URL}/api/recommendations/{created_recommendation}/comments", json=payload)
+    assert response.status_code in [401, 422]
+
